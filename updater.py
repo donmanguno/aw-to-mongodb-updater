@@ -22,7 +22,7 @@ print('database connected')
 
 # Instantiate AmbientAPI
 from ambient_api.ambientapi import AmbientAPI
-api = AmbientAPI(log_level='console')
+api = AmbientAPI()
 
 # Get device list
 devices = api.get_devices()
