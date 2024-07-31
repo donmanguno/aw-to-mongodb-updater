@@ -2,6 +2,7 @@
 # TODO: Set up logging
 # TODO: Sync devices as well as data
 # TODO: Improve the backfill mechanism
+# TODO: If db doesn't exist create as time series db
 
 import os
 import time
@@ -34,7 +35,7 @@ for device in devices:
     time.sleep(1)
     
     # Find most recent datum in DB
-    latest_entry = mongo_data_collection.find_one({'macAddress' : device.mac_address}, 
+    latest_entry = mongo_data_collection.find_one({'metadata.device.macAddress' : device.mac_address}, 
                                    sort=[('dateutc', pymongo.DESCENDING)])
     print(f'latest entry in database: {latest_entry}')
 
