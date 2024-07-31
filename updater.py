@@ -26,7 +26,7 @@ api = AmbientAPI()
 
 # Get device list
 devices = api.get_devices()
-print(f'got {len(devices)} devices')
+print(f'got {len(devices)} device{"s" if len(devices) > 1 else ""}')
 
 # Iterate through devices
 for device in devices:
@@ -36,6 +36,7 @@ for device in devices:
     # Find most recent datum in DB
     latest_entry = mongo_data_collection.find_one({'macAddress' : device.mac_address}, 
                                    sort=[('dateutc', pymongo.DESCENDING)])
+    print(f'latest entry in database: {latest_entry}')
 
     # How many updates (at 5 minute increments) have occurred since the last update in the database
     ts_latest_entry = latest_entry['dateutc'] if latest_entry is not None else int(os.environ['AMBIENT_DATA_START_TIMESTAMP'])
@@ -50,9 +51,15 @@ for device in devices:
 
     # Get device data
     data = device.get_data(limit=query_limit, end_date=query_end_date)
+    print(f'got {len(data)} entries')
     for datum in data:
-        datum['macAddress'] = device.mac_address
+        datum['metadata'] = {}
+        datum['metadata']['device'] = {}
+        datum['metadata']['device']['macAddress'] = device.mac_address
+        datum['metadata']['device']['info'] = device.info
+        datum['ts'] = datetime.fromtimestamp(datum['dateutc']/1000)
     try:
         result = mongo_data_collection.insert_many(data)
     except pymongo.errors.BulkWriteError as e:
         print(e.details['writeErrors'])
+    print('done')

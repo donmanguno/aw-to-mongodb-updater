@@ -1,1 +1,1 @@
-1 * * * * /usr/local/bin/python /updater.py >> /logfile
+*/5 * * * * /usr/local/bin/python /updater.py >> /logfile
