@@ -1,3 +1,4 @@
+.vscode
 .env
 build.sh
 push.sh
